@@ -2,9 +2,18 @@
 #Date: 7/28/2013
 #Purpose: Expose the RedSeal API via PowerShell
 #Bugs: Many...Just a POC
+<<<<<<< HEAD
 
 #default server name
 $script:Server = ""
+=======
+#don't yet support impact or detailed path queries
+#modify the subnet queries to return host and device objects instead of unwound treeID/hostname, treeid/devicename lists
+#work in progress to support REdSeal 6.6 API
+
+#default server name
+$script:Server = "ppxsec04.childrens.sea.kids"
+>>>>>>> 1bd1d27dba1a13d0e36f9a177fc1de7c5c90b3c7
 
 #default access query template
 [xml]$script:queryTemplate = @"
@@ -40,7 +49,11 @@ function Send-RSRequest {
     $webRequest.PreAuthenticate = $true
     $webRequest.Method = "GET"
     $webRequest.Headers.Add('Authorization', "Basic $token")
+<<<<<<< HEAD
     $webRequest.Accept = 'application/x-RedSealv' + $script:APIVersion + '+xml'
+=======
+    $webRequest.Accept = 'application/x-RedSealv" + $script:APIVersion + "+xml'
+>>>>>>> 1bd1d27dba1a13d0e36f9a177fc1de7c5c90b3c7
     $webRequest.KeepAlive = $false
     $webRequest.UserAgent = "PowerShell-RedSeal"
     $response = $webRequest.GetResponse()
@@ -70,7 +83,11 @@ function Invoke-RSDataQuery {
         [String]
         $Group,
         
+<<<<<<< HEAD
         #currently, Metrics is the only valid API type
+=======
+        #currently, Metrics is the only valid choice
+>>>>>>> 1bd1d27dba1a13d0e36f9a177fc1de7c5c90b3c7
         [Parameter(Mandatory = $false)]
         [ValidateSet('Metrics')]
         [String]
@@ -91,7 +108,12 @@ function Invoke-RSDataQuery {
 
     )
 
+<<<<<<< HEAD
     begin {
+=======
+begin
+    {
+>>>>>>> 1bd1d27dba1a13d0e36f9a177fc1de7c5c90b3c7
 
     }
 
@@ -833,6 +855,7 @@ function Get-RSGroup {
 
         Write-Debug "Response is $($groupXml.InnerXML.tostring())"
 
+<<<<<<< HEAD
         if ($script:APIVersion -eq "6.0") {
                 $groupXml = $groupXml.group
         } else {
@@ -841,11 +864,23 @@ function Get-RSGroup {
 
         if ($recurse -and ($groupXml.groups.group.path).count -ge 1) {
             $groupXml.groups.group.path | Get-RSGroup
+=======
+        if ($recurse -and ($groupXml.group.groups.group.path).count -ge 1) {
+            $groupXml.group.groups.group.path | Get-RSGroup
+>>>>>>> 1bd1d27dba1a13d0e36f9a177fc1de7c5c90b3c7
         }
 
         if ($XML) {
             $groupXml
         } else {
+<<<<<<< HEAD
+=======
+            if ($script:APIVersion -eq "6.0") {
+                $groupXml = $groupXml.group
+            } else {
+                $groupXml = $groupXml.FullGroup
+            }
+>>>>>>> 1bd1d27dba1a13d0e36f9a177fc1de7c5c90b3c7
             [pscustomobject] @{GroupName = $groupXml.Name
                 GroupPath    = $groupXml.path
                 GroupComment = $groupXml.comments
@@ -997,7 +1032,11 @@ function Get-RSDevice {
 
         [Parameter(ValueFromPipeline = $true, Mandatory = $false, Position = 0, ParameterSetName = 'SearchByName')]
         [String]
+<<<<<<< HEAD
         $Name=""
+=======
+        $Name="ppwsec05.childrens.sea.kids"
+>>>>>>> 1bd1d27dba1a13d0e36f9a177fc1de7c5c90b3c7
             
     )
 
@@ -1087,11 +1126,19 @@ function Get-RSHost {
     
         [Parameter(ValueFromPipeline = $true, Mandatory = $false, Position = 0, ParameterSetName = 'SearchByID')]
         [String]
+<<<<<<< HEAD
         $TreeID="",
 
         [Parameter(ValueFromPipeline = $true, Mandatory = $false, Position = 0, ParameterSetName = 'SearchByName')]
         [String]
         $Name=""
+=======
+        $TreeID="2c9697a7316371660131f73d53b2593a",
+
+        [Parameter(ValueFromPipeline = $true, Mandatory = $false, Position = 0, ParameterSetName = 'SearchByName')]
+        [String]
+        $Name="ppwsec05.childrens.sea.kids"
+>>>>>>> 1bd1d27dba1a13d0e36f9a177fc1de7c5c90b3c7
             
     )
 
@@ -1239,7 +1286,11 @@ function Set-RSHostValue {
     
         [Parameter(ValueFromPipeline = $true, Mandatory = $false, Position = 0)]
         [String]
+<<<<<<< HEAD
         $TreeID = "",
+=======
+        $TreeID = "2c9697a7316371660131f73d53b2593a",
+>>>>>>> 1bd1d27dba1a13d0e36f9a177fc1de7c5c90b3c7
     
         [Parameter(Mandatory=$false, Position=1)]
         [Int]

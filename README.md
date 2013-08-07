@@ -38,15 +38,14 @@ Only tested with PowerShell v3.
 Support is complete for RedSeal v6.0 API. Partial support for v6.6 API.
 
 # To Dos
-[x] Rewrite away from the use of Invoke-RESTMethod to WebMethod calls. RestMethod is just too buggy (timeout issues, URL mangling, etc.).
-[ ] Completely implement RS 6.6 API
-[x] Fall back mode to RS 6.0 API
-[ ] Support group modification
-[ ] Support DataQueries
-[ ] Better verification of credentials upon connection setup
-[ ] Support impact and detailed path queries
-[ ] Modify the subnet queries to return host and device objects instead of unwound treeID/hostname, treeid/devicename lists
-
+- [x] Rewrite away from the use of Invoke-RESTMethod to WebMethod calls. RestMethod is just too buggy (timeout issues, URL mangling, etc.).
+- [ ] Completely implement RS 6.6 API
+- [x] Fall back mode to RS 6.0 API
+- [ ] Support group modification
+- [ ] Support DataQueries
+- [ ] Better verification of credentials upon connection setup
+- [ ] Support impact and detailed path queries
+- [ ] Modify the subnet queries to return host and device objects instead of unwound treeID/hostname, treeid/devicename lists
 
 # Links
 http://www.redsealnetworks.com

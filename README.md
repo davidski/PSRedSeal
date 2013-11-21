@@ -4,6 +4,10 @@ Terms? We don't need no stinkin' terms. Don't be evil.
 # Introduction
 A PowerShell integration library for working with RedSeal.
 
+# News
+11/21/2014 - Significant update to reflect 6.6 API changes. Apart from group modification 
+support. Many big fixes throughout the code.
+
 # Command Set
 
 Current cmdlets exposed include:
@@ -35,17 +39,18 @@ Current cmdlets exposed include:
 
 # Limitations
 Only tested with PowerShell v3.
-Support is complete for RedSeal v6.0 API. Partial support for v6.6 API.
+Support is targetted for v6.6 API. Support for v6.0 API is now deprecated and will be removed in future versions.
 
 # To Dos
 - [x] Rewrite away from the use of Invoke-RESTMethod to WebMethod calls. RestMethod is just too buggy (timeout issues, URL mangling, etc.).
-- [ ] Completely implement RS 6.6 API
+- [x] Completely implement RS 6.6 API
 - [x] Fall back mode to RS 6.0 API
-- [ ] Support group modification
-- [ ] Support DataQueries
+- [x] Support group modification
+- [x] Support DataQueries
 - [ ] Better verification of credentials upon connection setup
 - [ ] Support impact and detailed path queries
-- [ ] Modify the subnet queries to return host and device objects instead of unwound treeID/hostname, treeid/devicename lists
+- [x] Modify the subnet queries to return host and device objects instead of unwound treeID/hostname, treeid/devicename lists
+- [ ] Test compatability under PowerShell 4 and the updated Invoke-RESTMethod API
 
 # Links
 http://www.redsealnetworks.com

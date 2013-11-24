@@ -2,10 +2,6 @@
 #Date: 7/28/2013
 #Purpose: Expose the RedSeal API via PowerShell
 #doesn't yet support impact or detailed path queries
-<<<<<<< HEAD
-=======
-#new group support not well-plumbed
->>>>>>> 48ea1a7f912075a2211874b6138a384511ac969e
 #group modifications pending bug fixes in RedSeal API
 
 #default server name
@@ -19,11 +15,8 @@ function Send-RSRequest {
         URI to query
     .PARAMETER method
         HTTP method to use, defaults to GET
-<<<<<<< HEAD
     .PARAMETER timeoutsec
         Number of seconds for timeout, defaults to 600 (10 minutes)
-=======
->>>>>>> 48ea1a7f912075a2211874b6138a384511ac969e
     .OUTPUTS
         Returns XML from the RedSeal server as an XML object
 #>
@@ -33,26 +26,18 @@ function Send-RSRequest {
         $Uri,
 
         [Parameter(Mandatory = $false, Position = 1)]
-<<<<<<< HEAD
         [ValidateSet("GET", "DELETE", "HEAD", "PUT", "POST")]
-=======
-        [ValidateSet("GET", "DELETE", "HEAD", "PUT")]
->>>>>>> 48ea1a7f912075a2211874b6138a384511ac969e
         [string]
         $Method = "GET",
 
         [Parameter(Mandatory = $false)]
         [string]
-<<<<<<< HEAD
         $Body,
 
         [Parameter(Mandatory = $false)]
         [int]
         $TimeoutSec = (10*60)
 
-=======
-        $Body
->>>>>>> 48ea1a7f912075a2211874b6138a384511ac969e
     )
 
     # generate basic auth string
@@ -70,20 +55,13 @@ function Send-RSRequest {
     $webRequest.Accept = 'application/x-RedSealv' + $script:APIVersion + '+xml'
     $webRequest.KeepAlive = $false
     $webRequest.UserAgent = "PowerShell-RedSeal"
-<<<<<<< HEAD
     $webRequest.Timeout = ($TimeoutSec * 1000)
 
-=======
->>>>>>> 48ea1a7f912075a2211874b6138a384511ac969e
 
     #Write-Warning "Request is $webrequest"
     #Start-Sleep -Milliseconds 100
 
-<<<<<<< HEAD
     if ($Method -eq 'PUT') {
-=======
-    if ($Method -eq "PUT") {
->>>>>>> 48ea1a7f912075a2211874b6138a384511ac969e
         $bytes = [System.Text.Encoding]::UTF8.GetBytes($Body) 
         #$webRequest.ContentType = $encoding
         $webRequest.ContentLength = $bytes.Length
@@ -91,7 +69,6 @@ function Send-RSRequest {
         [System.IO.Stream] $outputStream = [System.IO.Stream]$Webrequest.GetRequestStream()
         $outputStream.Write($bytes,0,$bytes.Length)  
         $outputStream.Close()
-<<<<<<< HEAD
     } elseif ($method -eq 'POST') {
 
         #create a new GUID to serve as a multipart form boundary
@@ -114,8 +91,6 @@ $body
         [System.IO.Stream] $outputStream = [System.IO.Stream]$Webrequest.GetRequestStream()
         $outputStream.Write($bytes, 0, $bytes.Length)  
         $outputStream.Close()
-=======
->>>>>>> 48ea1a7f912075a2211874b6138a384511ac969e
     }
     
     $errorMessage = $null
@@ -309,11 +284,7 @@ function Get-RSAdminTaskHistory {
                         Finished     = [boolean]$taskObj.IsTaskFinished
                         CompletionPercentage = $taskObj.CompletionPercentage
                         JobStateInfo = $taskObj.Status
-<<<<<<< HEAD
                         TextStatus   = $taskObj.TextStatus
-=======
-                        TextStatus   = ConvertFrom-RSDate $taskObj.TextStatus
->>>>>>> 48ea1a7f912075a2211874b6138a384511ac969e
                         TimeQueued   = ConvertFrom-RSDate $taskObj.QueueTime
                         BeginTime    = ConvertFrom-RSDate $taskObj.StartTime
                         EndTime      = ConvertFrom-RSDate $taskObj.EndTime
@@ -421,21 +392,12 @@ function Get-RSMetricsDetail {
 
         [Parameter()]
         $GroupPath
-<<<<<<< HEAD
 
     )
 
     begin {
     }
 
-=======
-
-    )
-
-    begin {
-    }
-
->>>>>>> 48ea1a7f912075a2211874b6138a384511ac969e
     process {
         [pscustomobject]@{
             Name           = $QueryLeaf.Name
@@ -606,7 +568,6 @@ function Get-RSSystemStatus {
                 HardDiskSummary = $(if ($resultXml.SystemStatus.RedSealVersion -eq $null) {
                     $null } else {
                     [pscustomobject]@{
-<<<<<<< HEAD
                         DiskUtilization = [int]$resultXML.SystemStatus.HardDiskSummary.DiskUtilization
                         RaidDiskStatus = $resultXML.SystemStatus.HardDiskSummary.RaidDiskStatus
                         TotalSpace = [int]$resultXML.SystemStatus.HardDiskSummary.TotalSpace
@@ -656,16 +617,6 @@ function Get-RSSystemLicense {
                 LicensesInUse = $resultXml.LicenseInfoData.CurrentDevicesInModel
                 LicenseExceeded = [System.Convert]::ToBoolean($resultXml.LicenseInfoData.IsLicensedDeviceExceeded)
                 Warnings = $resultXml.LicenseInfoData.Warnings
-=======
-                        DiskUtilization = $resultXML.SystemStatus.HardDiskSummary.DiskUtilization
-                        RaidDiskStatus = $resultXML.SystemStatus.HardDiskSummary.RaidDiskStatus
-                        TotalSpace = $resultXML.SystemStatus.HardDiskSummary.TotalSpace
-                        FreeSpace = $resultXML.SystemStatus.HardDiskSummary.FreeSpace                        
-                        EstimatedBackupSizeWithAnalysis = $resultXML.SystemStatus.HardDiskSummary.EstimatedBackupSizeWithAnalysis
-                        EstimatedBackupSizeWithoutAnalysis = $resultXML.SystemStatus.HardDiskSummary.EstimatedBackupSizeWithoutAnalysis
-                     }
-                 })
->>>>>>> 48ea1a7f912075a2211874b6138a384511ac969e
             }
         }
     }
@@ -1016,11 +967,7 @@ function Read-RSAccessResult {
             throw "No response found: $($rawXml.innerxml.tostring())"
         }
 
-<<<<<<< HEAD
         $rawXml.AccessResults.TrafficSegment | ForEach-Object {
-=======
-         $rawXml.AccessResults.TrafficSegment | ForEach-Object {
->>>>>>> 48ea1a7f912075a2211874b6138a384511ac969e
                 
             $table = @{}
             $table.add("Status", "TrafficSegment")
@@ -1310,7 +1257,6 @@ function Get-RSGroup {
 
         Write-Debug "Response is $($groupXml.InnerXML.tostring())"
 
-<<<<<<< HEAD
         if ($groupXml.message.text -like 'No group found*') {
             return $groupXML.message.text
         }
@@ -1371,69 +1317,6 @@ function Get-RSGroup {
                                 PrimaryCapability = $_.PrimaryCapability
                         }
                     })
-=======
-        if ($script:APIVersion -eq "6.0") {
-                $groupXml = $groupXml.group
-        } else {
-                $groupXml = $groupXml.FullGroup
-        }
-
-        #if we have subgroups, test if recursion is requested and whether recursion
-        #should return parsed objects or the raw XML
-        if ($recurse -and $XML -and ($groupXml.groups.group.path).count -ge 1) {
-            $groupXml.groups.group.path | Get-RSGroup -Recurse -XML
-        } elseif ($recurse -and ($groupXml.groups.group.path).count -ge 1) {
-            $groupXml.groups.group.path | Get-RSGroup -Recurse
-        }
-
-        if ($XML) {
-            $groupXml
-        } else {
-            [pscustomobject] @{
-                GroupName    = $groupXml.Name
-                GroupPath    = $groupXml.path
-                Comments     = $groupXml.comments
-                SubGroupName = $groupXml.SelectNodes("/FullGroup/Groups/Group/Name")."#text"
-                SubGroupPath = $groupXml.SelectNodes("/FullGroup/Groups/Group/Path")."#text"
-                SubGroups      = $groupXml.SelectNodes("/FullGroup/Groups/Group") |
-                     ForEach-Object  { 
-                        [pscustomobject]@{
-                            Name = $_.Name
-                            URL = $_.URL
-                            Path = $_.Path
-                        }
-                    } 
-                SubnetID     = $groupXml.SelectNodes("/FullGroup/Subnets/Subnet/ID")."#text"
-                Subnets      = $groupXml.SelectNodes("/FullGroup/Subnets/Subnet") |
-                     ForEach-Object  { 
-                        [pscustomobject]@{
-                            Name = $_.Name
-                            URL = $_.URL
-                            CIDR = $_.CIDR
-                            ID = $_.ID
-                            TrustLevel = $_.TrustLevel
-                            Description = $_.Description
-                        }
-                    } 
-                HostTreeID   = $groupXml.SelectNodes("/FullGroup/Computers/Host/TreeId")."#text"
-                HostName     = $groupXml.SelectNodes("/FullGroup/Computers/Host/Name")."#text"
-                Hosts        = $groupXml.SelectNodes("/FullGroup/Computers/Host") | 
-                    ForEach-Object  { 
-                        [pscustomobject]@{
-                            Name = $_.Name
-                            URL = $_.URL
-                            TreeID = $_.TreeID
-                        }
-                    }
-                Devices      = $groupXml.SelectNodes("/FullGroup/Computers/Device") |
-                    ForEach-Object  { 
-                        [pscustomobject]@{
-                            Name = $_.Name
-                            URL = $_.URL
-                            TreeID = $_.TreeID
-                            PrimaryCapability = $_.PrimaryCapability
-                    }
->>>>>>> 48ea1a7f912075a2211874b6138a384511ac969e
                 }
             }
         }
@@ -1444,11 +1327,7 @@ function Get-RSGroup {
 function New-RSGroup {
     <#
     .SYNOPSIS
-<<<<<<< HEAD
         Creates a new group custom object. To post to RedSeal, send the object to Set-RSGroup
-=======
-        Creates a new Host custom object. To post to RedSeal, send the object to Set-RSGroup
->>>>>>> 48ea1a7f912075a2211874b6138a384511ac969e
     .OUTPUTS
         One custom object
 #>
@@ -1490,7 +1369,6 @@ function Set-RSGroup {
         Sets or creates a group within RedSeal
     .PARAMETER Group
         Group object to set in RedSeal
-<<<<<<< HEAD
     .PARAMETER XML
         Boolean switch to return the raw XML instead of a parsed object
     .OUTPUTS
@@ -1602,140 +1480,8 @@ function Remove-RSGroup {
         Removes a group within RedSeal
     .PARAMETER GroupPath
         Path to group to remove
-=======
->>>>>>> 48ea1a7f912075a2211874b6138a384511ac969e
     .PARAMETER XML
         Boolean switch to return the raw XML instead of a parsed object
-    .OUTPUTS
-        Nothing.
-#>
-    [cmdletbinding()]
-    Param(
-        [Parameter(ValueFromPipeline = $true, Mandatory = $true, Position = 0)]
-<<<<<<< HEAD
-        [String]
-        $GroupPath,
-   
-=======
-        [PSObject]
-        $Group,
-   
-        [Parameter(Mandatory = $false)]
-        [Int]
-        $TimeoutSec = 60 * 2,
-
->>>>>>> 48ea1a7f912075a2211874b6138a384511ac969e
-        [Parameter(Mandatory = $false)]
-        [Switch]
-        $XML
-    )
-    
-    begin {
-    }
-
-    process {
-
-<<<<<<< HEAD
-        $uri = "https://" + $script:Server + "/data/group" + $groupPath
-=======
-        $groupXML = New-Object XML
-        $e = $groupXml.CreateElement("FullGroup")
-        $groupXml.AppendChild($e) | Out-Null
-
-        $e = $groupXml.CreateElement("Name")
-        $e.innertext = $group.GroupName
-        $groupXml.SelectSingleNode("/FullGroup").AppendChild($e) | Out-Null
-
-        $e = $groupXml.CreateElement("Path")
-        $e.innertext = $group.GroupPath
-        $groupXml.SelectSingleNode("/FullGroup").AppendChild($e) | Out-Null
-
-        $e = $groupXml.CreateElement("Comments")
-        $e.innertext = $group.Comments
-        $groupXml.SelectSingleNode("/FullGroup").AppendChild($e) | Out-Null
-
-        $e = $groupXml.CreateElement("Membership")
-        $groupXml.SelectSingleNode("/FullGroup").AppendChild($e) | Out-Null
-
-        #build list of static hosts to add
-        if ($group.Hosts.Count) {
-            $e = $groupXml.CreateElement("StaticComputers")
-            $groupXml.SelectSingleNode("/FullGroup/Membership").AppendChild($e) | Out-Null
-            foreach ($hostObj in $group.hosts) {
-
-                $e = $groupXml.CreateElement("Host")
-                $groupXml.SelectSingleNode("/FullGroup/Membership/StaticComputers").AppendChild($e) | Out-Null
-                $e = $groupXml.CreateElement("Name")
-                $e.innertext = $hostObj.name
-                #$groupXml.SelectSingleNode("/FullGroup/Membership/StaticComputers").AppendChild($e) | Out-Null
-                $groupXml.SelectSingleNode("/FullGroup/Membership/StaticComputers/Host[last()]").AppendChild($e) | Out-Null
-
-                <#
-                $e = $groupXml.CreateElement("Host")
-                $groupXml.SelectSingleNode("/FullGroup/Membership/StaticComputers").AppendChild($e) | Out-Null
-                $e = $groupXml.CreateElement("TreeID")
-                $e.innertext = $hostObj.TreeID
-                $groupXml.SelectSingleNode("/FullGroup/Membership/StaticComputers/Host[last()]").AppendChild($e) | Out-Null
-                #>
-            }
-        }
-
-        #build list of static subnets to add
-        if ($group.Subnets.Count) {
-            $e = $groupXml.CreateElement("StaticSubnets")
-            $groupXml.SelectSingleNode("/FullGroup/Membership").AppendChild($e) | Out-Null
-            foreach ($subnet in $group.Subnet) {
-                $e = $groupXml.CreateElement("Subnet")
-                $groupXml.SelectSingleNode("/FullGroup/Membership/StaticSubnets").AppendChild($e) | Out-Null
-                $e = $groupXml.CreateElement("Name")
-                $e.innertext = $subnet.id
-                $groupXml.SelectSingleNode("/FullGroup/Membership/StaticSubnets/Subnet[last()]").AppendChild($e) | Out-Null
-            }
-        }
->>>>>>> 48ea1a7f912075a2211874b6138a384511ac969e
-        
-        Write-Debug $groupXML.InnerXML.ToString().Replace("><",">`r`n<")
-
-<<<<<<< HEAD
-        #$groupXml = Invoke-RestMethod -Uri $uri -Credential $script:Credentials -ContentType "application/x-RedSealv6.0+xml"
-        $groupXml = Send-RSRequest -uri $uri -Method DELETE
-=======
-        #set the body of the HTTP put
-        $respBody = $($groupXml.InnerXML.ToString().Replace("><",">`r`n<"))
->>>>>>> 48ea1a7f912075a2211874b6138a384511ac969e
-
-        Write-Verbose "Query put body is: $respBody"
-
-<<<<<<< HEAD
-=======
-        $uri = "https://$script:server/data/group"
-        Write-Verbose "URI is $uri"
-
-        #finally, try to execute the query
-        try {
-            #$resultXml = Invoke-RestMethod -uri $uri -Credential $script:Credentials -Method Put -Body $respBody -TimeoutSec $timeoutSec -DisableKeepAlive
-            $resultXml = Send-RSQuery -uri $uri -Method Put -Body $respBody
-        }
-        catch {
-            throw $_.Exception.Message
-        }
-
-        Write-Debug $resultXml.innerxml.tostring()
-        $resultXml        
-
-    }
-}
-
-function Remove-RSGroup {
-    <#
-    .SYNOPSIS
-        Removes a group within RedSeal
-    .PARAMETER Group
-        Group object to set in RedSeal
-    .PARAMETER XML
-        Boolean switch to return the raw XML instead of a parsed object
-    .PARAMETER Timeout
-        Integer of number of seconds for HTTP timeout
     .OUTPUTS
         Nothing.
 #>
@@ -1764,7 +1510,6 @@ function Remove-RSGroup {
 
         Write-Debug "Response is $($groupXml.InnerXML.tostring())"
 
->>>>>>> 48ea1a7f912075a2211874b6138a384511ac969e
         if ($XML) {
             $groupXml
         } else {
@@ -1783,11 +1528,8 @@ function Get-RSSubnet {
         Name or IP address space of the subnet to get
     .PARAMETER XML
         Return the raw XML instead of a parsed object
-<<<<<<< HEAD
     .PARAMETER Recurse
         Return objects for all alternatives, if multiple hits found
-=======
->>>>>>> 48ea1a7f912075a2211874b6138a384511ac969e
     .OUTPUTS
         One custom object per subnet.
 #>
@@ -1805,15 +1547,11 @@ function Get-RSSubnet {
 
         [Parameter(Mandatory=$false)]
         [Switch]
-<<<<<<< HEAD
         $XML = $false,
 
         [Parameter(Mandatory=$false)]
         [Switch]
         $Recurse = $false
-=======
-        $XML = $false
->>>>>>> 48ea1a7f912075a2211874b6138a384511ac969e
     )
 
     begin {
@@ -1830,7 +1568,6 @@ function Get-RSSubnet {
         #$subnetXml = Invoke-RestMethod -uri $uri -Credential $script:Credentials -ContentType "application/x-RedSealv6.0+xml"
         $subnetXml = Send-RSRequest -uri $uri
 
-<<<<<<< HEAD
 
 
         #if alternatives are returned then fetch all the alternatives and don't return a top level object
@@ -1860,29 +1597,6 @@ function Get-RSSubnet {
                         }
                 }        
             }
-=======
-        if ($XML) {
-            $subnetXml
-        } else {
-            [pscustomobject] @{
-                TreeID = $subnetXml.Subnet.id
-                Name = $subnetXml.Subnet.name
-                Description = $subnetXml.Subnet.Description
-                DescriptionSource = $subnetXml.Subnet.DescriptionSource
-                TrustLevel = $subnetXml.subnet.TrustLevel
-                CIDR = $subnetXML.Subnet.CIDR
-                #HostTreeID = $subnetXml.subnet.hosts.host.treeid
-                #HostName = $subnetXml.subnet.hosts.host.name
-                Hosts      = $subnetXml.SelectNodes("/Subnet/Hosts/Host") |
-                    ForEach-Object  { 
-                        [pscustomobject]@{
-                            Name = $_.Name
-                            URL = $_.URL
-                            TreeID = $_.TreeID
-                        }
-                    }
-            }        
->>>>>>> 48ea1a7f912075a2211874b6138a384511ac969e
         }
     }
 }
@@ -1983,11 +1697,8 @@ function Get-RSHost {
         RedSeal TreeID for a host object
     .PARAMETER Name
         DNS name of the host object
-<<<<<<< HEAD
     .PARAMETER FetchAll
         Fetches all host defined on the RedSeal server. Returns only the name, URL, and TreeID of hosts.
-=======
->>>>>>> 48ea1a7f912075a2211874b6138a384511ac969e
     .OUTPUTS
         One custom object per host.
 #>
@@ -2000,15 +1711,11 @@ function Get-RSHost {
 
         [Parameter(ValueFromPipeline = $true, Mandatory = $false, Position = 0, ParameterSetName = 'SearchByName')]
         [String]
-<<<<<<< HEAD
         $Name="ppwsec05.childrens.sea.kids",
 
         [Parameter(ValueFromPipeline = $true, Mandatory = $false, Position = 0, ParameterSetName = 'FetchAll')]
         [Switch]
         $FetchAll = $False
-=======
-        $Name="ppwsec05.childrens.sea.kids"
->>>>>>> 48ea1a7f912075a2211874b6138a384511ac969e
             
     )
 
@@ -2083,11 +1790,7 @@ function Get-RSHostDetail {
                 IPAddress        = $hostDetailXml.Interfaces.Interface.Address
                 OperatingSystem  = $hostDetailXml.OperatingSystem
                 Value            = [int]$metricsXML.Metrics.Value
-<<<<<<< HEAD
                 SpecifiedValue   = if ($hostDetailXml.Value) { [int]$hostdetailXML.Value } else { $null }
-=======
-                SpecifiedValue   = if ($hostDetailXml.Value) { [int]$hostdetail.Value } else { $null }
->>>>>>> 48ea1a7f912075a2211874b6138a384511ac969e
                 AttackDepth      = [int]$metricsXML.Metrics.AttackDepth
                 Exposure         = $metricsXML.Metrics.Exposure
                 Risk             = [int]$metricsXML.Metrics.Risk
@@ -2114,7 +1817,6 @@ function New-RSHost {
     
         [Parameter(ValueFromPipeline = $true, Mandatory = $true, Position = 0)]
         $HostName,
-<<<<<<< HEAD
 
         [Parameter(Mandatory = $false)]
         $SpecifiedValue,
@@ -2123,16 +1825,6 @@ function New-RSHost {
         $IPAddress,
 
         [Parameter(Mandatory = $false)]
-=======
-
-        [Parameter(Mandatory = $false)]
-        $SpecifiedValue,
-
-        [Parameter(Mandatory = $false)]
-        $IPAddress,
-
-        [Parameter(Mandatory = $false)]
->>>>>>> 48ea1a7f912075a2211874b6138a384511ac969e
         $Comments
     )
 
@@ -2195,11 +1887,7 @@ function Remove-RSHost {
         if ($hostXml.message.text -like 'No host*') {
             [pscustomobject] @{Message = "No host found"}
         } elseif ($hostXml.list) {
-<<<<<<< HEAD
             $hostXml.list.host | foreach { Get-RSHostDetail $_ }
-=======
-            $hostXml.list.host | % { Get-RSHostDetail $_ }
->>>>>>> 48ea1a7f912075a2211874b6138a384511ac969e
         } else {
             Get-RSHostDetail $hostXml.host    
         }
@@ -2252,69 +1940,6 @@ function Set-RSHost {
         #create a processing directive for the mandatory header
         $pi = $hostXml.CreateProcessingInstruction("RedSeal", 'mediaType="application/x-RedSealv5.0+xml"')
         $hostXml.InsertBefore($pi, $hostXml.ChildNodes[1]) | Out-Null
-<<<<<<< HEAD
-=======
-
-        foreach ($singleHost in $HostObject) {
-            
-            $e = $hostXml.CreateElement("Name")
-            $e.InnerText = $singleHost.hostname
-            $hostXml.SelectSingleNode("/Host[last()]").AppendChild($e) | Out-Null
-            
-            #set host value, if specified
-            if ($singleHost.SpecifiedValue) {
-                $e = $hostXml.CreateElement("Value")
-                $e.InnerText = $singleHost.SpecifiedValue
-                $hostXml.SelectSingleNode("/Host[last()]").AppendChild($e) | Out-Null
-            }
-            
-            $e = $hostXml.CreateElement("Interfaces")
-            $hostXml.SelectSingleNode("/Host[last()]").AppendChild($e) | Out-Null
-            
-            #foreach interface (only support 1 interface in this iteration)
-            $e = $hostXml.CreateElement("Interface")
-            $hostXml.SelectSingleNode("/Host/Interfaces[last()]").AppendChild($e) | Out-Null
-            $e = $hostXml.CreateElement("Address")
-            $e.InnerText = $singleHost.IPAddress
-            $hostXml.SelectSingleNode("/Host/Interfaces/Interface[last()]").AppendChild($e) | Out-Null
-            
-            $e = $hostXml.CreateElement("Applications")
-            $hostXml.SelectSingleNode("/Host[last()]").AppendChild($e) | Out-Null
-            
-            #foreach application
-            <#
-            
-            $e = $hostXml.CreateElement("Applications")
-            $e.InnerText = <appname>
-            $hostXml.SelectSingleNode("/Host/Applications[last()").AppendChild($e) | Out-Null
-            
-            $e = $hostXml.CreateElement("IP")
-            $e.InnerText = <appIP>
-            $hostXml.AppendChild($e) | Out-Null
-            
-            #ports and protocols
-            $e = $hostXml.CreateElement("PortAndProtocol")
-            $e.InnerText = <appname>
-            $hostXml.AppendChild($e) | Out-Null
-            
-            $interface.address.innertext() = $host.Address
-            $applications
-            $application.IP
-            $application.portandprotocol
-            $application.portandprotocol.port
-            $application.portandprotocol.protocol
-            
-            #vulnerabilities
-            $application.vulnerabilities
-            #>
-
-            #set the host comments (aka Description)
-            $e = $hostXml.CreateElement("Comments")
-            $e.InnerText = $singleHost.Comments
-            $hostXml.SelectSingleNode("/Host[last()]").AppendChild($e) | Out-Null
-
-        }
->>>>>>> 48ea1a7f912075a2211874b6138a384511ac969e
 
         foreach ($singleHost in $HostObject) {
             
@@ -2383,12 +2008,8 @@ function Set-RSHost {
             $respBody
         } else {
             $uri = "https://" + $script:server + "/data/host"
-<<<<<<< HEAD
             $result = Send-RSRequest -uri $uri -Method POST -Body $respbody
             #$result = Invoke-RestMethod -uri $uri -Credential $script:credentials -method Post -ContentType "multipart/form-data" -Body $respBody
-=======
-            $result = Invoke-RestMethod -uri $uri -Credential $script:credentials -method Post -ContentType "application/xml; boundary=$boundary" -Body $respBody
->>>>>>> 48ea1a7f912075a2211874b6138a384511ac969e
             
             #parse response
             Write-Debug "Response is $result"
@@ -2449,11 +2070,7 @@ function Read-RSReport {
         Reads RedSeal reports and converts the RedSeal XML into usable objects.
     .PARAMETER ReportName
         Name of the report to fetch and read
-<<<<<<< HEAD
     .PARAMETER ReportFile
-=======
-    .PARAMETER File
->>>>>>> 48ea1a7f912075a2211874b6138a384511ac969e
         Full path to file name to write output
     .Example
         Read-RSReport Remediation+Priorities+%28Web+Report%29

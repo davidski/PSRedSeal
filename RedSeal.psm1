@@ -114,7 +114,7 @@ $body
         $stream = $response.GetResponseStream()
         #$reader = new-object System.IO.StreamReader($response.GetResponseStream())
         $reader = [io.streamreader]($stream)
-        [xml]$reader.readtoend()
+        [xml]$reader.ReadToEnd()
         $stream.flush()
         $stream.close()
     } else {
@@ -2071,10 +2071,11 @@ function Read-RSReport {
     .PARAMETER ReportName
         Name of the report to fetch and read
     .PARAMETER ReportFile
-        Full path to file name to write output
+        Full path to file name to use in place of reading from RedSeal server
     .Example
         Read-RSReport Remediation+Priorities+%28Web+Report%29
         Read-RSReport -ReportName https://ppxsec04/data/report/All+Exposed+Vulnerabilities+with+Patches
+        Read-RSReport -ReportFile C:\testReport.xml
 #>
 
     [cmdletBinding(DefaultParameterSetName='ReportUrl')]
@@ -2082,6 +2083,9 @@ function Read-RSReport {
         # The URL for the reports
         [Parameter(ValueFromPipeline = $true, Mandatory = $true, Position = 0, ParameterSetName = 'ReportURL')]
         [string]$ReportName,
+
+        [Parameter(ValueFromPipeline = $true, Mandatory = $false, Position = 1, ParameterSetName = 'ReportURL')]
+        [switch]$KeepTempFile = $false,
 
         [Parameter(Mandatory = $true, Position = 0, ParameterSetName = 'ReportFile', ValueFromPipelineByPropertyName = $true)]
         [Alias('Fullname')]
@@ -2132,29 +2136,45 @@ function Read-RSReport {
             $ErrorMessage = $Error[0].Exception.ErrorRecord.Exception.Message;
             $Matched = ($ErrorMessage -match '[0-9]{3}')
             if ($Matched) {
-                Write-Error -Message ('HTTP status code was {0} ({1})' -f $HttpStatusCode, $matched);
+                Write-Error -Message ('HTTP status code was {0} ({1})' -f $HttpStatusCode, $matched)
             } else {
-                Write-Error -Message $ErrorMessage;
+                Write-Error -Message $ErrorMessage
             }
 
             Write-Error -Message $Error[0].Exception.InnerException.Response
             return
         }
 
-        Write-Verbose "Reading response"
+        Write-Verbose "Creating response stream"
         $reader = new-object System.IO.StreamReader($resp.GetResponseStream())
-        Write-Output $reader.ReadToEnd()
+
+        write-Verbose "Reading response stream..."
+        #Write-Output $reader.ReadToEnd()
+
+        #dump the web response stream to a temporary file
+        $tempFile = [IO.Path]::GetTempFileName()
+        write-verbose "Writting response to $tempFile"
+        $writer = new-object System.IO.StreamWriter($tempFile)
+        $s = $reader.ReadLine()
+        While ($s  -ne $null) {
+            $writer.WriteLine($s)
+            $s = $reader.ReadLine()
+        }
+        $writer.close()
+        write-verbose "$tempFile complete."
+
+        #return the name of the temporary file
+        $tempFile
 
         #clean up
         $reader.close()
-      
         $resp.close()
 
     }
 
-        # This code reads specific XML elements from a stream using XmlTextReader
-        # (for speed and memory consumption)
-        $fastReadXml = Add-Type -PassThru -ReferencedAssemblies System.Xml @"
+    # This code reads specific XML elements from a stream using XmlTextReader
+    # (for speed and memory consumption)
+    $fastReadXml = Add-Type -PassThru -ReferencedAssemblies System.Xml @"
 using System;
 using System.IO;
 using System.Xml;
@@ -2217,13 +2237,17 @@ namespace FastImport {
     }
     process {
         if ($PSCmdlet.ParameterSetName -eq 'ReportUrl') {
+            
+            Write-Progress -Activity "Getting Report" -Status "Report will be saved to the system temp directory"
             $un = $script:credentials.GetNetworkCredential().Username
             $pass = $script:credentials.GetNetworkCredential().Password
             [uri]$ReportUrl = "https://$script:server/data/report/$reportName"
-            Write-Progress "Getting Report" "  "
             $httpResponse = Get-HTTP -Username $un -Password $pass -Url $ReportUrl
-            Write-Progress "Creating Memory Stream" "  "        
-            $s = [IO.MemoryStream]([Text.Encoding]::UTF8.GetBytes($httpResponse))
+
+            Write-Progress -Activity "Creating Memory Stream" -Status "Reading in $httpResponse"        
+            $s = [IO.File]::OpenRead($httpResponse)
+            #$s = [IO.MemoryStream]([Text.Encoding]::UTF8.GetBytes($httpResponse))
+
         } elseif ($PSCmdlet.ParameterSetName -eq 'ReportFile') {
             $resolvedFile = $ExecutionContext.SessionState.Path.GetResolvedPSPathFromPSPath($file)
             if (-not $resolvedFile) { return }
@@ -2265,5 +2289,16 @@ namespace FastImport {
         }
         $s.Close()
         $s.Dispose()
+
+        #If we're working off the server, clear out the temporary file
+        if ($PSCmdlet.ParameterSetName -eq 'ReportUrl') {
+            if ($keepTempFile) {
+                Write-Verbose "Keeping $httpResponse per request"
+            } else {
+                Remove-Item $httpResponse
+            }
+        }
+
+
     }
 }

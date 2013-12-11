@@ -1263,65 +1263,62 @@ function Get-RSGroup {
 
         $groupXml = $groupXml.FullGroup
 
-        #if we have subgroups, test if recursion is requested and whether recursion
-        #should return parsed objects or the raw XML
-        if ($recurse -and ($groupXml.groups.group.path).count -ge 1) {
-            $groupXml.groups.group.path | Get-RSGroup -Recurse -XML:$XML
-        } else {    
-
-            if ($XML) {
-                $groupXml
-            } else {
-                [pscustomobject] @{
-                    GroupName    = $groupXml.Name
-                    GroupPath    = $groupXml.path
-                    Comments     = $groupXml.comments
-                    SubGroupName = $groupXml.SelectNodes("/FullGroup/Groups/Group/Name")."#text"
-                    SubGroupPath = $groupXml.SelectNodes("/FullGroup/Groups/Group/Path")."#text"
-                    SubGroups      = $groupXml.SelectNodes("/FullGroup/Groups/Group") |
-                         ForEach-Object  { 
-                            [pscustomobject]@{
-                                Name = $_.Name
-                                URL = $_.URL
-                                Path = $_.Path
-                            }
-                        } 
-                    SubnetID     = $groupXml.SelectNodes("/FullGroup/Subnets/Subnet/ID")."#text"
-                    Subnets      = @($groupXml.SelectNodes("/FullGroup/Subnets/Subnet") |
-                         ForEach-Object  { 
-                            [pscustomobject]@{
-                                Name = $_.Name
-                                URL = $_.URL
-                                CIDR = $_.CIDR
-                                ID = $_.ID
-                                TrustLevel = $_.TrustLevel
-                                Description = $_.Description
-                            }
-                        })
-                    HostTreeID   = $groupXml.SelectNodes("/FullGroup/Computers/Host/TreeId")."#text"
-                    HostName     = $groupXml.SelectNodes("/FullGroup/Computers/Host/Name")."#text"
-                    Hosts        = @($groupXml.SelectNodes("/FullGroup/Computers/Host") | 
-                        ForEach-Object  { 
-                            [pscustomobject]@{
-                                Name = $_.Name
-                                URL = $_.URL
-                                TreeID = $_.TreeID
-                            }
-                        })
-                    Devices      = @($groupXml.SelectNodes("/FullGroup/Computers/Device") |
-                        ForEach-Object  { 
-                            [pscustomobject]@{
-                                Name = $_.Name
-                                URL = $_.URL
-                                TreeID = $_.TreeID
-                                PrimaryCapability = $_.PrimaryCapability
+        if ($XML) {
+            $groupXml
+        } else {
+            [pscustomobject] @{
+                GroupName    = $groupXml.Name
+                GroupPath    = $groupXml.path
+                Comments     = $groupXml.comments
+                SubGroupName = $groupXml.SelectNodes("/FullGroup/Groups/Group/Name")."#text"
+                SubGroupPath = $groupXml.SelectNodes("/FullGroup/Groups/Group/Path")."#text"
+                SubGroups    = $groupXml.SelectNodes("/FullGroup/Groups/Group") |
+                    ForEach-Object  { 
+                        [pscustomobject]@{
+                            Name = $_.Name
+                            URL = $_.URL
+                            Path = $_.Path
                         }
-                    })
-                }
+                    } 
+                SubnetID     = $groupXml.SelectNodes("/FullGroup/Subnets/Subnet/ID")."#text"
+                Subnets      = @($groupXml.SelectNodes("/FullGroup/Subnets/Subnet") |
+                    ForEach-Object  { 
+                        [pscustomobject]@{
+                            Name = $_.Name
+                            URL = $_.URL
+                            CIDR = $_.CIDR
+                            ID = $_.ID
+                            TrustLevel = $_.TrustLevel
+                            Description = $_.Description
+                        }
+                })
+                HostTreeID   = $groupXml.SelectNodes("/FullGroup/Computers/Host/TreeId")."#text"
+                HostName     = $groupXml.SelectNodes("/FullGroup/Computers/Host/Name")."#text"
+                Hosts        = @($groupXml.SelectNodes("/FullGroup/Computers/Host") | 
+                    ForEach-Object  { 
+                        [pscustomobject]@{
+                            Name = $_.Name
+                            URL = $_.URL
+                            TreeID = $_.TreeID
+                        }
+                })
+                Devices      = @($groupXml.SelectNodes("/FullGroup/Computers/Device") |
+                    ForEach-Object  { 
+                        [pscustomobject]@{
+                        Name = $_.Name
+                        URL = $_.URL
+                        TreeID = $_.TreeID
+                        PrimaryCapability = $_.PrimaryCapability
+                    }
+                })
             }
         }
-    }
 
+        #if we have subgroups, test if recursion is requested
+        if ($recurse -and ($groupXml.groups.group.path).count -ge 1) {
+            $groupXml.groups.group.path | Get-RSGroup -Recurse -XML:$XML
+        }
+    }
 }
 
 function New-RSGroup {

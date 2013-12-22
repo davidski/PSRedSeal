@@ -53,7 +53,7 @@ function Send-RSRequest {
     $webRequest.Method = $method
     $webRequest.Headers.Add('Authorization', "Basic $token")
     $webRequest.Accept = 'application/x-RedSealv' + $script:APIVersion + '+xml'
-    $webRequest.KeepAlive = $false
+    $webRequest.KeepAlive = $true
     $webRequest.UserAgent = "PowerShell-RedSeal"
     $webRequest.Timeout = ($TimeoutSec * 1000)
 
@@ -1696,6 +1696,8 @@ function Get-RSHost {
         DNS name of the host object
     .PARAMETER FetchAll
         Fetches all host defined on the RedSeal server. Returns only the name, URL, and TreeID of hosts.
+    .PARAMETER NoMetrics
+        Do not fetch the metrics data.
     .OUTPUTS
         One custom object per host.
 #>
@@ -1712,7 +1714,11 @@ function Get-RSHost {
 
         [Parameter(ValueFromPipeline = $true, Mandatory = $false, Position = 0, ParameterSetName = 'FetchAll')]
         [Switch]
-        $FetchAll = $False
+        $FetchAll = $False,
+
+        [Parameter(ValueFromPipeline = $true, Mandatory = $false)]
+        [Switch]
+        $NoMetrics = $False
             
     )
 
@@ -1738,17 +1744,49 @@ function Get-RSHost {
         if ($hostXml.message.text -like 'No host*') {
             [pscustomobject] @{Message = "No host found"}
         } elseif ($hostXml.list -and -!$FetchAll) {
-            $hostXml.list.host | foreach { Get-RSHostDetail $_ }
+            $hostXml.list.host | foreach { 
+                if ($NoMetrics) {
+                    [pscustomobject] @{
+                        TreeID           = $_.TreeID
+                        Hostname         = $_.Name
+                        IPAddress        = $_.Interfaces.Interface.Address
+                        OperatingSystem  = $_.OperatingSystem
+                        SpecifiedValue   = if ($_.Value) { [int]$_.Value } else { $null }
+                        Applications     = $_.Applications
+                        LastModifiedDate = ConvertFrom-RSDate $_.LastModifiedDate
+                        LastScannedDate  = if ($_.LastScannedDate) { ConvertFrom-RSDate $_.LastScannedDate } else { $null }
+                        Comments         = $_.Comments
+                     }
+                } else {
+                    Get-RSHostDetail $_ 
+                }
+            }
         } elseif ($FetchAll) {
             $hostXml.list.host | foreach {
                 [pscustomobject] @{
-                    Name   = $_.name
+                    Hostname   = $_.name
                     URL    = $_.URL
                     TreeID = $_.TreeID
                 }
             }
         } else {
-            Get-RSHostDetail $hostXml.host    
+            if ($NoMetrics) {
+                $hostxml.host | foreach {
+                    [pscustomobject] @{
+                        TreeID           = $_.TreeID
+                        Hostname         = $_.Name
+                        IPAddress        = $_.Interfaces.Interface.Address
+                        OperatingSystem  = $_.OperatingSystem
+                        SpecifiedValue   = if ($_.Value) { [int]$_.Value } else { $null }
+                        Applications     = $_.Applications
+                        LastModifiedDate = ConvertFrom-RSDate $_.LastModifiedDate
+                        LastScannedDate  = if ($_.LastScannedDate) { ConvertFrom-RSDate $_.LastScannedDate } else { $null }
+                        Comments         = $_.Comments
+                    }
+                }
+            } else {
+                Get-RSHostDetail $hostXML.host
+            }
         }
           
     }

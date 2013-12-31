@@ -1745,7 +1745,7 @@ function Get-RSHost {
             [pscustomobject] @{Message = "No host found"}
         } elseif ($hostXml.list -and -!$FetchAll) {
             $hostXml.list.host | foreach { 
-                if ($NoMetrics) {
+                if ($NoMetrics -or !$_.metrics) {
                     [pscustomobject] @{
                         TreeID           = $_.TreeID
                         Hostname         = $_.Name
@@ -1755,6 +1755,8 @@ function Get-RSHost {
                         Applications     = $_.Applications
                         LastModifiedDate = ConvertFrom-RSDate $_.LastModifiedDate
                         LastScannedDate  = if ($_.LastScannedDate) { ConvertFrom-RSDate $_.LastScannedDate } else { $null }
+                        HostType         = $_.Type
+                        PrimaryCapability = "HOST"
                         Comments         = $_.Comments
                      }
                 } else {
@@ -1767,10 +1769,11 @@ function Get-RSHost {
                     Hostname   = $_.name
                     URL    = $_.URL
                     TreeID = $_.TreeID
+                    PrimaryCapability = "HOST"
                 }
             }
         } else {
-            if ($NoMetrics) {
+            if ($NoMetrics -or !$hostxml.host.metrics) {
                 $hostxml.host | foreach {
                     [pscustomobject] @{
                         TreeID           = $_.TreeID
@@ -1781,6 +1784,8 @@ function Get-RSHost {
                         Applications     = $_.Applications
                         LastModifiedDate = ConvertFrom-RSDate $_.LastModifiedDate
                         LastScannedDate  = if ($_.LastScannedDate) { ConvertFrom-RSDate $_.LastScannedDate } else { $null }
+                        HostType         = $_.Type
+                        PrimaryCapability = "HOST"
                         Comments         = $_.Comments
                     }
                 }
@@ -1835,6 +1840,8 @@ function Get-RSHostDetail {
                 Applications     = $HostDetailXml.Applications
                 LastModifiedDate = ConvertFrom-RSDate $hostDetailXml.LastModifiedDate
                 LastScannedDate  = if ($hostDetailXML.LastScannedDate) { ConvertFrom-RSDate $hostDetailXml.LastScannedDate } else { $null }
+                HostType         = $hostDetailXml.Type
+                PrimaryCapability = "HOST"
                 Comments         = $hostDetailXml.Comments
         }
     }

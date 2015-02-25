@@ -1920,19 +1920,19 @@ function Remove-RSHost {
             $uri = "https://$script:server/data/host/id/$TreeID"
         }
         
-        Write-Verbose "Fetching host object."   
-        $hostXml = Invoke-RestMethod -uri $uri -Credential $script:credentials -Method DELETE
+        Write-Verbose "Deleting host object."   
+        #$hostXml = Invoke-RestMethod -uri $uri -Credential $script:credentials -Method DELETE
         $hostXml = Send-RSRequest -uri $uri -Method DELETE
 
-        Write-Debug "XML returned is at hostXml.innerXML"
+        Write-Verbose "Reponse from servers is $($hostXml.innerXML)"
+        Write-Debug "Response from delete request is $($hostXml.innerXML)"
 
-        if ($hostXml.message.text -like 'No host*') {
+        if ($hostXml.message.text -like 'No computers*') {
             [pscustomobject] @{Message = "No host found"}
-        } elseif ($hostXml.list) {
-            $hostXml.list.host | foreach { Get-RSHostDetail $_ }
         } else {
-            Get-RSHostDetail $hostXml.host    
+            [pscustomobject] @{Message = "Deletion successful"}
         }
+
     }
 }
 
@@ -2447,5 +2447,48 @@ namespace FastImport {
         }
 
 
+    }
+}
+
+function Get-RSCollectionTasks {
+    <#
+    .SYNOPSIS
+        Retrieve the list of data collection tasks.
+    .OUTPUTS
+        One custom object per data collection task.
+#>
+    [cmdletbinding()]
+    Param(  
+    )
+
+    begin {
+        $uri = "https://$script:server/data/import/task"
+    }
+
+    process {
+      
+        Write-Verbose "Fetching data collection tasks."
+        $tasksXml = Send-RSRequest -uri $uri
+
+        Write-Debug "XML returned is at tasksXml.list"
+
+        $tasksXml.list.DataCollectionTask | foreach {
+            [pscustomobject] @{
+                Name           = $_.Name
+                URL            = $_.URL
+                Created        = ConvertFrom-RSDate $_.Created
+                Type           = $_.Type
+                Enabled        = [boolean]$_.enabled
+                Schedule       = $_.schedule
+                SendEmail      = [boolean]$_.SendEmail
+                RuleUsage      = [boolean]$_.RuleUsage
+                DynamicRouting = [boolean]$_.DynamicRouting
+                PluginName     = $_.Plugin.Name
+                PluginVersion  = $_.Plugin.Version
+                Hostname       = if ($_.communication."properties".property.name -contains "Hostname") { 
+                    "hostname present"  } else { 
+                    $null }
+            }
+        }
     }
 }

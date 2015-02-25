@@ -30,6 +30,7 @@ Install-Module -URL https://github.com/davidski/RedSeal/archive/master.zip
 Current cmdlets exposed include:
 + Connect-RSServer - Connect to a RedSeal server                                                                                               
 + ConvertFrom-RSDate - Utility function to convert RedSeal's data format into a .NET compatabile datetime object                                                                                             
++ Get-RSCollectionTasks - Retrieve the list of data collection tasks
 + Get-RSConnection - Retrieve current RedSeal connection status                                                                                               
 + Get-RSDevice - Retrieve a device                                                                                                   
 + Get-RSDeviceDetail - Fetch full details on a device                                                                                             

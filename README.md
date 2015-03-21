@@ -1,6 +1,3 @@
-# TERMS
-Terms? We don't need no stinkin' terms. Don't be evil.
-
 # Introduction
 A PowerShell integration library for working with RedSeal.
 

@@ -509,11 +509,11 @@ function Connect-RSServer {
         Throw "Unable to connect to RedSeal!"
     }
 
-    if ((Get-RSSystemStatus).RedSealVersion -like '*6.0*') {
+    if ((Get-RSSystemStatus).RedSealVersion -notlike '*7.*') {
         $script:APIVersion = "6.0"
-        Write-Warning "Compatibility with RedSeal pre-6.6 API deprecated and no longer tested!"
+        Write-Warning "Compatibility with RedSeal pre-7.0 API deprecated and no longer tested!"
     } else {
-        $script:APIVersion = "6.6"
+        $script:APIVersion = "7.0"
     }
 
 }
@@ -1257,8 +1257,14 @@ function Get-RSGroup {
 
         Write-Debug "Response is $($groupXml.InnerXML.tostring())"
 
+        #test for no group found (bad URI)
         if ($groupXml.message.text -like 'No group found*') {
             return $groupXML.message.text
+        }
+        
+        #test for generic failure (test for NPE)
+        if ($groupXml.message.text -like 'Get Failed*') {
+            return $null
         }
 
         $groupXml = $groupXml.FullGroup
@@ -1325,6 +1331,16 @@ function New-RSGroup {
     <#
     .SYNOPSIS
         Creates a new group custom object. To post to RedSeal, send the object to Set-RSGroup
+    .PARAMETER GroupName
+        Name of the top level group
+    .PARAMETER GroupPath
+        RedSeal path to the top level group
+    .PARAMETER References
+        Hash of Name, URL, Path, TargetName, TargetURL, TargetPath to any desired reference group
+    .PARAMETER Hosts
+        Array of hosts to add to the group membership
+    .PARAMETER Comments
+        Text to place into the RedSeal group comments field
     .OUTPUTS
         One custom object
 #>
@@ -1341,7 +1357,13 @@ function New-RSGroup {
         $IPAddress,
 
         [Parameter(Mandatory = $false)]
-        $Comments
+        $Comments,
+
+        [Parameter(Mandatory = $false)]
+        $Hosts,
+
+        [Parameter(Mandatory = $false)]
+        $References
     )
 
     begin {
@@ -1356,6 +1378,7 @@ function New-RSGroup {
                 Hosts            = if ($Hosts)   { $Hosts   } else { $null }
                 Subnets          = if ($Subnets) { $Subnets } else { $null }
                 Devices          = if ($Devices) { $Devices } else { $null }
+                References       = if ($References) { $References } else { $null }
         }
     }
 }
@@ -1445,6 +1468,41 @@ function Set-RSGroup {
                 $groupXml.SelectSingleNode("/FullGroup/Membership/StaticSubnets/Subnet[last()]").AppendChild($e) | Out-Null
             }
         }
+
+        #build any reference pointers
+        if ($group.References.Count) {
+            $e = $groupXml.CreateElement("Groups")
+            $groupXml.SelectSingleNode("/FullGroup").AppendChild($e) | Out-Null
+            $e = $groupXml.CreateElement("FullGroup")
+            $groupXml.SelectSingleNode("/FullGroup/Groups").AppendChild($e) | Out-Null
+            foreach ($reference in $group.References) {
+                
+                #set the parent group
+                $e = $groupXml.CreateElement("Name")
+                $e.innertext = $reference.Name
+                $groupXml.SelectSingleNode("/FullGroup/Groups/FullGroup").AppendChild($e) | Out-Null
+                $e = $groupXml.CreateElement("URL")
+                $e.innertext = $reference.URL
+                $groupXml.SelectSingleNode("/FullGroup/Groups/FullGroup").AppendChild($e) | Out-Null
+                $e = $groupXml.CreateElement("Path")
+                $e.innertext = $reference.Path
+                $groupXml.SelectSingleNode("/FullGroup/Groups/FullGroup").AppendChild($e) | Out-Null
+            
+                #set the target info
+                $e = $groupXml.CreateElement("ReferencedGroup")
+                $groupXml.SelectSingleNode("/FullGroup/Groups/FullGroup").AppendChild($e) | Out-Null
+                $e = $groupXml.CreateElement("Name")
+                $e.innertext = $reference.TargetName
+                $groupXml.SelectSingleNode("/FullGroup/Groups/FullGroup/ReferencedGroup").AppendChild($e) | Out-Null
+                $e = $groupXml.CreateElement("URL")
+                $e.innertext = $reference.TargetURL
+                $groupXml.SelectSingleNode("/FullGroup/Groups/FullGroup/ReferencedGroup").AppendChild($e) | Out-Null
+                $e = $groupXml.CreateElement("Path")
+                $e.innertext = $reference.TargetPath
+                $groupXml.SelectSingleNode("/FullGroup/Groups/FullGroup/ReferencedGroup").AppendChild($e) | Out-Null
+            }
+        }
+
         
         Write-Debug $groupXML.InnerXML.ToString().Replace("><",">`r`n<")
 
@@ -1919,7 +1977,6 @@ function Remove-RSHost {
         } else {
             $uri = "https://$script:server/data/host/id/$TreeID"
         }
-        
         Write-Verbose "Deleting host object."   
         #$hostXml = Invoke-RestMethod -uri $uri -Credential $script:credentials -Method DELETE
         $hostXml = Send-RSRequest -uri $uri -Method DELETE
@@ -2490,5 +2547,84 @@ function Get-RSCollectionTasks {
                     $null }
             }
         }
+    }
+}
+
+function Get-RSModelIssue {
+<#
+    Gets the status of one or more model issue checks
+#>
+    [cmdletbinding()]
+    Param(
+
+        [Parameter(Mandatory = $false, Position = 0, ValueFromPipeline = $True)]
+        $IssueID
+
+    )
+
+    begin {
+    }
+
+    process {
+
+        Write-Verbose "Working on issue #: $($IssueID)"
+        
+        $uri = "https://$script:server/data/library/MI/$issueID"
+        Write-Verbose "uri is $uri"
+        $miResult = Send-RSRequest -Uri $uri -Method GET -TimeoutSec 10
+
+        Write-Debug "Response is in miResult"
+
+        $miResult.ModelIssue.Issues.IssueSummary.FailedHosts.Host | % { [pscustomobject]@{
+                        TreeID           = $_.TreeID
+                        Hostname         = $_.Name
+                        IPAddress        = $_.Address
+                        PrimaryCapability = "HOST"
+                        }
+         }
+
+    }
+}
+
+function Import-RSScanFile {
+<#
+    Import a vulnerability scan file into RedSeal
+#>
+    [cmdletbinding()]
+    Param(
+
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $True)]
+        $FilePath,
+
+        [Parameter(Mandatory = $false, Position = 1, ValueFromPipeline = $True)]
+        $ScannerType = "nessus"
+
+    )
+
+    begin {
+    }
+
+    process {
+
+        Write-Verbose "Working on file $FilePath"
+        
+        if (-not (Test-Path $FilePath)) {
+            Write-Warning "Could not fine a file at $FilePath!"
+            break
+        }
+
+        $uri = "https://$script:server/data/import/$ScannerType"
+        
+        Write-Verbose "Reading scan file..."
+        $scanContent = [xml](get-content $FilePath)
+        $scanContent = $scanContent.InnerXML.ToString().Replace("><",">`r`n<")
+        Write-Verbose "Posting scan file..."
+
+        $importResult = Send-RSRequest -Uri $uri -Method Post -Body $scanContent
+
+        Write-Debug "Response is in importResult"
+
+        $importResult.ImportResult
+
     }
 }

@@ -1473,33 +1473,35 @@ function Set-RSGroup {
         if ($group.References.Count) {
             $e = $groupXml.CreateElement("Groups")
             $groupXml.SelectSingleNode("/FullGroup").AppendChild($e) | Out-Null
-            $e = $groupXml.CreateElement("FullGroup")
-            $groupXml.SelectSingleNode("/FullGroup/Groups").AppendChild($e) | Out-Null
             foreach ($reference in $group.References) {
                 
+                # create contained for the group
+                $e = $groupXml.CreateElement("FullGroup")
+                $groupXml.SelectSingleNode("/FullGroup/Groups").AppendChild($e) | Out-Null
+
                 #set the parent group
                 $e = $groupXml.CreateElement("Name")
                 $e.innertext = $reference.Name
-                $groupXml.SelectSingleNode("/FullGroup/Groups/FullGroup").AppendChild($e) | Out-Null
+                $groupXml.SelectSingleNode("/FullGroup/Groups/FullGroup[last()]").AppendChild($e) | Out-Null
                 $e = $groupXml.CreateElement("URL")
                 $e.innertext = $reference.URL
-                $groupXml.SelectSingleNode("/FullGroup/Groups/FullGroup").AppendChild($e) | Out-Null
+                $groupXml.SelectSingleNode("/FullGroup/Groups/FullGroup[last()]").AppendChild($e) | Out-Null
                 $e = $groupXml.CreateElement("Path")
                 $e.innertext = $reference.Path
-                $groupXml.SelectSingleNode("/FullGroup/Groups/FullGroup").AppendChild($e) | Out-Null
+                $groupXml.SelectSingleNode("/FullGroup/Groups/FullGroup[last()]").AppendChild($e) | Out-Null
             
                 #set the target info
                 $e = $groupXml.CreateElement("ReferencedGroup")
-                $groupXml.SelectSingleNode("/FullGroup/Groups/FullGroup").AppendChild($e) | Out-Null
+                $groupXml.SelectSingleNode("/FullGroup/Groups/FullGroup[last()]").AppendChild($e) | Out-Null
                 $e = $groupXml.CreateElement("Name")
                 $e.innertext = $reference.TargetName
-                $groupXml.SelectSingleNode("/FullGroup/Groups/FullGroup/ReferencedGroup").AppendChild($e) | Out-Null
+                $groupXml.SelectSingleNode("/FullGroup/Groups/FullGroup[last()]/ReferencedGroup").AppendChild($e) | Out-Null
                 $e = $groupXml.CreateElement("URL")
                 $e.innertext = $reference.TargetURL
-                $groupXml.SelectSingleNode("/FullGroup/Groups/FullGroup/ReferencedGroup").AppendChild($e) | Out-Null
+                $groupXml.SelectSingleNode("/FullGroup/Groups/FullGroup[last()]/ReferencedGroup").AppendChild($e) | Out-Null
                 $e = $groupXml.CreateElement("Path")
                 $e.innertext = $reference.TargetPath
-                $groupXml.SelectSingleNode("/FullGroup/Groups/FullGroup/ReferencedGroup").AppendChild($e) | Out-Null
+                $groupXml.SelectSingleNode("/FullGroup/Groups/FullGroup[last()]/ReferencedGroup").AppendChild($e) | Out-Null
             }
         }
 

@@ -1,5 +1,5 @@
 install:
-  - Install-Module -Name PSScriptAnalyzer
+  - ps: Install-Module -Name PSScriptAnalyzer
 
 build: false
 

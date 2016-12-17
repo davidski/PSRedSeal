@@ -1,3 +1,5 @@
+![Build Status](https://ci.appveyor.com/api/projects/status/github/SCH-CISM/RedSeal?svg=true)
+
 # Introduction
 A PowerShell integration library for working with RedSeal.
 

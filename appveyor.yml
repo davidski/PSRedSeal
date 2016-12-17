@@ -1,4 +1,5 @@
 install:
+  - ps: Install-PackageProvider Nuget –force –verbose
   - ps: Install-Module -Name PSScriptAnalyzer
 
 build: false

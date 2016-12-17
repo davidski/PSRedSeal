@@ -1,5 +1,6 @@
 install:
   - ps: Install-PackageProvider Nuget –force –verbose
+  - ps: Set-PSRepository -Name PSGallery -InstallationPolicy Trusted 
   - ps: Install-Module -Name PSScriptAnalyzer
 
 build: false

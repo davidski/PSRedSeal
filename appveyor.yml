@@ -1,0 +1,8 @@
+install:
+  - Install-Module -Name PSScriptAnalyzer
+
+build: false
+
+test_script:
+  - ps: $res = Invoke-ScriptAnalyzer .\RedSeal.ps*
+  - ps: if ($res.Count -gt 0) { throw "$($res.Count) tests failed."}

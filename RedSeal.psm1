@@ -141,6 +141,8 @@ function Set-RSDataQuery {
     .OUTPUTS
         A DataQuery XML blob
     #>
+    [cmdletbinding(SupportsShouldProcess = $true)]
+    Param()
 }
 
 function Invoke-RSDataQuery {
@@ -556,16 +558,16 @@ function Get-RSSystemStatus {
                 LastAnalysisStartTime = $resultXml.SystemStatus.LastAnalysis.StartTime | ConvertFrom-RSDate
                 LastAnalysisEndTime = $resultXml.SystemStatus.LastAnalysis.EndTime | ConvertFrom-RSDate
                 RunningAnalysisStatus = $resultXml.SystemStatus.RunningAnalysis.Status
-                RunningAnalysisStatusStartTime = $(if ($resultXml.SystemStatus.RunningAnalysis.StartTime -ne $null ) {
+                RunningAnalysisStatusStartTime = $(if ($null -ne $resultXml.SystemStatus.RunningAnalysis.StartTime ) {
                     ConvertFrom-RSDate $resultXml.SystemStatus.RunningAnalysis.StartTime
                     })
                 RunningAnalysisStatusPercentComplete = $resultXml.SystemStatus.RunningAnalysis.PercentComplete
                 RunningAnalysisStatusStage = $resultXml.SystemStatus.RunningAnalysis.Name
                 TRLVersion = $resultXml.SystemStatus.TRLVersion
-                RedSealVersion = $(if ($resultXml.SystemStatus.RedSealVersion -ne $null) {
+                RedSealVersion = $(if ($null -ne $resultXml.SystemStatus.RedSealVersion) {
                     $resultXml.SystemStatus.RedSealVersion } else {
                     "RedSeal 6.0 (Build unknown)" })
-                HardDiskSummary = $(if ($resultXml.SystemStatus.RedSealVersion -eq $null) {
+                HardDiskSummary = $(if ($null -eq $resultXml.SystemStatus.RedSealVersion) {
                     $null } else {
                     [pscustomobject]@{
                         DiskUtilization = [int]$resultXML.SystemStatus.HardDiskSummary.DiskUtilization
@@ -640,7 +642,7 @@ function Set-RSQueryTarget {
     .OUTPUTS
         A single target object
 #>
-    [cmdletbinding(DefaultParametersetName="empty")]
+    [cmdletbinding(SupportsShouldProcess = $true, DefaultParametersetName="empty")]
     Param(
         [ValidateSet("Subnet", "Host", "Group", "AllTrusted", "AllUntrusted", "AllSubnets", "Device")]
         [string]
@@ -963,7 +965,7 @@ function Read-RSAccessResult {
         if ($rawXml.AccessResults.Message.innertext -like "*No access found*") {
             $table.add("Status", "No access found.")
             return [pscustomobject] $table
-        } elseif ($rawXml.AccessResults.Message -ne $null) {
+        } elseif ($null -ne $rawXml.AccessResults.Message) {
             throw "No response found: $($rawXml.innerxml.tostring())"
         }
 
@@ -1008,7 +1010,7 @@ function Read-RSThreatResult {
         if ($rawXml.ThreatResults.Message.innertext -like "*No threats found*") {
             $table.add("Status", "No threats found.")
             return [pscustomobject] $table
-        } elseif ($rawXml.ThreatResults.Message -ne $null) {
+        } elseif ($null -ne $rawXml.ThreatResults.Message) {
             throw "No response found: $($rawXml.innerxml.tostring())"
         }
 
@@ -1108,7 +1110,7 @@ function Read-RSPathResult {
         if ($rawXml.PathResult.Result.innertext -like "*CLOSED*") {
             $table.add("Status", "No open paths found.")
             return [pscustomobject] $table
-        } elseif ($rawXml.PathResult.Message -ne $null) {
+        } elseif ($null -ne $rawXml.PathResult.Message) {
             throw "No response found: $($rawXml.innerxml.tostring())"
         }
 
@@ -1144,7 +1146,7 @@ function ConvertFrom-RSDate {
 
         Write-Verbose "Received a raw date of $RSDate"
 
-        if ($RSDate -ne $null) {
+        if ($null -ne $RSDate) {
             $RSDate =  $RSDate -replace "\s\w{3}$", ""
             [datetime]::ParseExact($RSDate, "MMM d, yyyy h:mm:ss tt", $null)
         }
@@ -1172,7 +1174,7 @@ function ConvertTo-RSDate {
 
         Write-Verbose "Received a raw date of $RSDate"
 
-        if ($RSDate -ne $null) {
+        if ($null -ne $RSDate) {
             $RSDate =  $RSDate | Get-Date -Format "MMM dd, yyyy hh:mm:ss tt PST"
         } else {
             $RSDate =  Get-Date -Format "MMM dd, yyyy hh:mm:ss tt PST"
@@ -1344,7 +1346,7 @@ function New-RSGroup {
     .OUTPUTS
         One custom object
 #>
-    [cmdletbinding()]
+    [cmdletbinding(SupportsShouldProcess = $true)]
     Param(
     
         [Parameter(ValueFromPipeline = $true, Mandatory = $true, Position = 0)]
@@ -1394,7 +1396,7 @@ function Set-RSGroup {
     .OUTPUTS
         Nothing.
 #>
-    [cmdletbinding()]
+    [cmdletbinding(SupportsShouldProcess = $true)]
     Param(
         [Parameter(ValueFromPipeline = $true, Mandatory = $true, Position = 0)]
         [PSObject]
@@ -1914,7 +1916,7 @@ function New-RSHost {
     .OUTPUTS
         One custom object
 #>
-    [cmdletbinding()]
+    [cmdletbinding(SupportsShouldProcess = $true)]
     Param(
     
         [Parameter(ValueFromPipeline = $true, Mandatory = $true, Position = 0)]
@@ -2010,7 +2012,7 @@ function Set-RSHost {
         One result object.
 #>
 
-    [cmdletbinding()]
+    [cmdletbinding(SupportsShouldProcess = $true)]
     Param(
     
         [Parameter(ValueFromPipeline = $true, Mandatory = $false, Position = 0)]
@@ -2024,7 +2026,7 @@ function Set-RSHost {
     )
 
     begin {
-        if ($Credentials -eq $null) {
+        if ($null -eq $Credentials) {
             Connect-RSServer
         }
     }
@@ -2362,7 +2364,7 @@ function Read-RSReport {
         write-verbose "Writting response to $tempFile"
         $writer = new-object System.IO.StreamWriter($tempFile)
         $s = $reader.ReadLine()
-        While ($s  -ne $null) {
+        While ($null -ne $s) {
             $writer.WriteLine($s)
             $s = $reader.ReadLine()
         }
@@ -2509,7 +2511,7 @@ namespace FastImport {
     }
 }
 
-function Get-RSCollectionTasks {
+function Get-RSCollectionTask {
     <#
     .SYNOPSIS
         Retrieve the list of data collection tasks.

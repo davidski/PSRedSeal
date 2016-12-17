@@ -1,5 +1,8 @@
 # PSScriptAnalyzerSettings.psd1
 @{
     Severity=@('Error','Warning')
-    ExcludeRules=@('PSAvoidUsingCmdletAliases')
+    ExcludeRules=@('PSAvoidUsingCmdletAliases',
+      'PSAvoidUsingUserNameAndPassWordParams',
+      'PSShouldProcess',
+      'PSAvoidUsingPlainTextForPassword')
 }

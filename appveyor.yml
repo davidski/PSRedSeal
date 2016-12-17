@@ -3,8 +3,13 @@ install:
   - ps: Set-PSRepository -Name PSGallery -InstallationPolicy Trusted 
   - ps: Install-Module -Name PSScriptAnalyzer
 
-build: false
+build:
+  - false
 
 test_script:
   - ps: $res = Invoke-ScriptAnalyzer .\RedSeal.ps*
   - ps: if ($res.Count -gt 0) { throw "$($res.Count) tests failed."}
+  
+environment:
+  NuGetApiKey:
+    secure: 4HmcYasXmCps4URyA53dat5hyqyvIQzTE3IS7GcVFuJgad2Bn1hkKoE8qUH9fpso

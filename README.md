@@ -1,7 +1,7 @@
-[![Build Status][https://ci.appveyor.com/api/projects/status/github/SCH-CISM/RedSeal?svg=true]][https://ci.appveyor.com/project/davidski/RedSeal]
+[![Build Status](https://ci.appveyor.com/api/projects/status/github/SCH-CISM/RedSeal?svg=true)](https://ci.appveyor.com/project/davidski/RedSeal)
 
 # Introduction
-A PowerShell integration library for working with RedSeal.
+A PowerShell integration library for working with [RedSeal](https://www.redseal.net).
 
 ## Sample Use Cases
 + Retrieve risk map data and store for trending and reporting
@@ -20,13 +20,15 @@ Install-Module -Name PSRedSeal
 ```
 
 Alternatively you can manually install the module by:
+
 1. Downloading a zip build from the release page.
-2. Unblock and extract the zip.
-3. From PowerShell in the extract directory enter: `Install-Module -Path .\PSRedSeal`
+2. Unblocking and extracting the zip.
+3. From PowerShell in the extracted directory enter: `{PowerShell} Install-Module -Path .\PSRedSeal`
 
 # Command Set
 
 Exposed cmdlets include (check `Get-Command -Module PSRedSeal` for latest):
+
 + Connect-RSServer - Connect to a RedSeal server
 + ConvertFrom-RSDate - Utility function to convert RedSeal's data format into a .NET compatible datetime object
 + Get-RSCollectionTasks - Retrieve the list of data collection tasks
@@ -55,8 +57,8 @@ Exposed cmdlets include (check `Get-Command -Module PSRedSeal` for latest):
 + Set-RSQueryTarget - Set a target or destination query object for subsequent query
 
 # Limitations
-Only tested with PowerShell v3+.
-RedSeal v7 API targeted.
+- Only tested with PowerShell v3+
+- RedSeal v7 API targeted.
 
 # Links
 [RedSeal](https://www.redseal.net/)

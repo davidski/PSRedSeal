@@ -66,10 +66,10 @@ Copyright = '(c) 2016 David F. Severski. All rights reserved.'
 # NestedModules = @()
 
 # Functions to export from this module
-FunctionsToExport = '*'
+FunctionsToExport = 'Connect-RSServer', 'ConvertFrom-RSDate', 'ConvertTo-RSData', 'Get-RSAdminTaskHistory', 'Get-RSCollectionTask', 'Get-RSComputer', 'Get-RSConnections', 'Get-RSDevice', 'Get-RSDeviceDetail', 'Get-RSGroup', 'Get-RSHost', 'Get-RSHostDetail', 'Get-RSMetricsDetails', 'Get-RSMetricsGroup', 'Get-RSModelIssue', 'Get-RSReportList', 'Get-RSSubnet', 'Get-RSSystemLicense', 'Get-RSSystemStatus', 'Get-RSView', 'Import-RSScanFile', 'Invoke-RSDataQuery', 'Invoke-RSQuery', 'New-RSGroup', 'New-RSHost', 'Read-RSAccessResult', 'Read-RSImpactResult', 'Read-RSPathResult', 'Read-RSReport', 'Read-RSThreatResult', 'Remove-RSGroup', 'Remove-RSHost', 'Set-RSDataQuery', 'Set-RSGroup', 'Set-RSHost', 'Set-RSQueryTarget', 'Start-RSAdminTask', 'Start-RSAnalysis'
 
 # Cmdlets to export from this module
-CmdletsToExport = '*'
+CmdletsToExport = ''
 
 # Variables to export from this module
 VariablesToExport = '*'

@@ -9,6 +9,28 @@ install:
   - ps: Set-PSRepository -Name PSGallery -InstallationPolicy Trusted 
   - ps: Install-Module -Name PSScriptAnalyzer -Force
 
+build_script:
+  - ps: |
+      $versionParts = ($env:APPVEYOR_BUILD_VERSION).split('.')
+      Import-Module .\PSRedSeal
+      $moduleInfo = Get-Module -Name PSRedSeal
+      $newVersion = New-Object -TypeName 'System.Version' -ArgumentList @($versionParts[0],$versionParts[1],$versionParts[2],$versionParts[3])
+      $FunctionsToExport = @()
+      foreach($key in $moduleInfo.ExportedFunctions.Keys)
+      {
+          $FunctionsToExport += $key
+      }
+      $projectUri = [uri]'https://github.com/SCH-CISM/RedSeal'
+      $projectLicense = [uri]'https://github.com/SCH-CISM/RedSeal/LICENSE'
+      $tags = @('redseal', 'security', 'network', 'vulnerability', 'api')
+      New-ModuleManifest -Path .\PSRedSeal\PSRedSeal.psd1 -Guid $moduleInfo.Guid -Author $moduleInfo.Author -CompanyName $moduleInfo.CompanyName `
+          -Copyright $moduleInfo.Copyright -RootModule $moduleInfo.RootModule -ModuleVersion $newVersion -Description $moduleInfo.Description `
+          -FunctionsToExport $FunctionsToExport  -CmdletsToExport '' `
+          -AliasesToExport '' -VariablesToExport '' -tags $tags -LicenseUri $projectLicense `
+          -ProjectUri $projectUri
+  - 7z a PSRedSeal.zip %APPVEYOR_BUILD_FOLDER%\PSRedSeal\*
+  - ps: Get-ChildItem .\PSRedSeal.zip | % {Push-AppveyorArtifact $_.FullName -FileName $_.Name }
+
 test_script:
   - ps: |
       $res = Invoke-ScriptAnalyzer -Path $ENV:APPVEYOR_BUILD_FOLDER\PSRedSeal\* -Settings $ENV:APPVEYOR_BUILD_FOLDER\PSRedSeal\PSScriptAnalyzerSettings.psd1
@@ -22,10 +44,6 @@ test_script:
       $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\TestsResults.xml))
       # Fail if there are issues
       if ($res.Count -gt 0) { throw "$($res.Count) tests failed."}
-
-build_script:
-  - 7z a PSRedSeal.zip %APPVEYOR_BUILD_FOLDER%\PSRedSeal\*
-  - ps: Get-ChildItem .\PSRedSeal.zip | % {Push-AppveyorArtifact $_.FullName -FileName $_.Name }
 
 deploy:
   - provider: Script

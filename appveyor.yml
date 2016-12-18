@@ -53,8 +53,7 @@ deploy:
     ps: Publish-Module $ENV:APPVEYOR_BUILD_FOLDER\PSRedSeal -NuGetApiKey $Env:NUGET_API_KEY
     
   - provider: GitHub
-    on:
-      appveyor_repo_tag: true
+    draft: true
     description: 'Release description'
     auth_token:
       secure: ANstD90CPeaEG/JTUq4pw8/s0UaGDmIomjvVt3f2tPqnFdD2VhPF8DOlP5AAP2lX

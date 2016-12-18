@@ -4,5 +4,6 @@
     ExcludeRules=@('PSAvoidUsingCmdletAliases',
       'PSAvoidUsingUserNameAndPassWordParams',
       'PSShouldProcess',
-      'PSAvoidUsingPlainTextForPassword')
+      'PSAvoidUsingPlainTextForPassword',
+      'PSUseShouldProcessForStateChangingFunctions')
 }

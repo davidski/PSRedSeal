@@ -1,5 +1,8 @@
 # Changelog
 
+## 12/17/2016
+- Major refactor from monolithic to individual functions
+
 ## 6/29/2015
 - Corrected logic on reference group manipulation.
 
@@ -8,3 +11,8 @@
 
 ## 2/25/2015
 - Added `Get-RSCollectionTasks` implementation to fetch data collection tasks.
+
+## 11/21/2014
+- Significant update to reflect 6.6 API changes. 
+- Apart from group modification support.
+- Many big fixes throughout the code.

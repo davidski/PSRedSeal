@@ -1,10 +1,9 @@
 version: '1.2.{build}'
 
 install:
-  - ps: >-
-      Install-PackageProvider Nuget –Force
-      Set-PSRepository -Name PSGallery -InstallationPolicy Trusted 
-      Install-Module -Name PSScriptAnalyzer -Force
+  - ps: nstall-PackageProvider Nuget –Force
+  - ps: Set-PSRepository -Name PSGallery -InstallationPolicy Trusted 
+  - ps: Install-Module -Name PSScriptAnalyzer -Force
 
 build: false
 
@@ -21,6 +20,15 @@ test_script:
       $wc.UploadFile(“https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)“, (Resolve-Path .\TestsResults.xml))
       # Fail if there are issues
       if ($res.Count -gt 0) { throw "$($res.Count) tests failed."}
+
+after_test:
+  on:
+    appveyor_repo_tag: true
+  ps: Publish-Module -Name "RedSeal" -NuGetApiKey $Env:nuget_api_key
+
+environment:
+    nuget_api_key:
+      secure: 4HmcYasXmCps4URyA53dat5hyqyvIQzTE3IS7GcVFuJgad2Bn1hkKoE8qUH9fpso
 
 after_build:
   - ps: Get-ChildItem .\*.nupkg | % {Push-AppveyorArtifact $_.FullName -FileName $_.Name }

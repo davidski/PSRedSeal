@@ -64,5 +64,7 @@ deploy:
   - provider: GitHub
     draft: true
     description: 'Appveyor generated build'
+    on:
+      appveyor_repo_tag: true
     auth_token:
       secure: ANstD90CPeaEG/JTUq4pw8/s0UaGDmIomjvVt3f2tPqnFdD2VhPF8DOlP5AAP2lX

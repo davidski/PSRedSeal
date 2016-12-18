@@ -9,7 +9,7 @@ build: false
 
 test_script:
   - ps: |
-      $res = Invoke-ScriptAnalyzer -Path  -Settings .\PSRedSeal\PSScriptAnalyzerSettings.psd1
+      $res = Invoke-ScriptAnalyzer -Path $ENV:APPVEYOR_BUILD_FOLDER\PSRedSeal\* -Settings $ENV:APPVEYOR_BUILD_FOLDER\PSRedSeal\PSScriptAnalyzerSettings.psd1
       # Format the results
       $header = “<testsuite tests=`”$($results.Count)`”>”
       $body = $results | ForEach-Object {“<testcase classname=`”analyzer`” name=`”$($_.RuleName)`”><failure type=`”$($_.ScriptName)`”>$($_.Message)</failure></testcase>”}

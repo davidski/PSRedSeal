@@ -12,7 +12,7 @@
 RootModule = 'PSRedSeal.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.2'
+ModuleVersion = '0.0.1'
 
 # ID used to uniquely identify this module
 GUID = 'eb22a46c-a0bc-48ad-917b-4b232476c4ba'
@@ -27,7 +27,7 @@ CompanyName = ''
 Copyright = '(c) 2016 David F. Severski. All rights reserved.'
 
 # Description of the functionality provided by this module
-# Description = ''
+Description = 'PowerShell interface module for the RedSeal API'
 
 # Minimum version of the Windows PowerShell engine required by this module
 # PowerShellVersion = ''

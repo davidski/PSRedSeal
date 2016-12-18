@@ -1,7 +1,7 @@
 version: '1.2.{build}'
 
 install:
-  - ps: nstall-PackageProvider Nuget –Force
+  - ps: Install-PackageProvider Nuget –Force
   - ps: Set-PSRepository -Name PSGallery -InstallationPolicy Trusted 
   - ps: Install-Module -Name PSScriptAnalyzer -Force
 
@@ -26,10 +26,10 @@ environment:
       secure: 4HmcYasXmCps4URyA53dat5hyqyvIQzTE3IS7GcVFuJgad2Bn1hkKoE8qUH9fpso
 
 after_build:
-  - 7z a redseal.zip %APPVEYOR_BUILD_FOLDER%\redseal.ps*
+  - 7z a redseal.zip %APPVEYOR_BUILD_FOLDER%\PSRedSeal\*
   - ps: Get-ChildItem .\*.zip | % {Push-AppveyorArtifact $_.FullName -FileName $_.Name }
   - path: build
-    name: RedSeal
+    name: PSRedSeal
     type: NuGetPackage
     api_key:
       secure: 4HmcYasXmCps4URyA53dat5hyqyvIQzTE3IS7GcVFuJgad2Bn1hkKoE8qUH9fpso
@@ -39,7 +39,7 @@ deploy:
     name: production
     on:
       appveyor_repo_tag: true
-    ps: Publish-Module -Name "RedSeal" -NuGetApiKey $Env:NUGET_API_KEY
+    ps: Publish-Module $ENV:APPVEYOR_BUILD_FOLDER\PSRedSeal -NuGetApiKey $Env:NUGET_API_KEY
     
   - provider: GitHub
     on:

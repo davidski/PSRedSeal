@@ -72,10 +72,10 @@ FunctionsToExport = 'Connect-RSServer', 'ConvertFrom-RSDate', 'ConvertTo-RSData'
 CmdletsToExport = ''
 
 # Variables to export from this module
-VariablesToExport = '*'
+VariablesToExport = ''
 
 # Aliases to export from this module
-AliasesToExport = '*'
+AliasesToExport = ''
 
 # List of all modules packaged with this module.
 # ModuleList = @()

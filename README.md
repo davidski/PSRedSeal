@@ -1,4 +1,4 @@
-[![Build Status](https://ci.appveyor.com/api/projects/status/github/SCH-CISM/RedSeal?svg=true)](https://ci.appveyor.com/project/davidski/RedSeal)
+[![Build Status](https://ci.appveyor.com/api/projects/status/github/davidski/PSRedSeal?svg=true)](https://ci.appveyor.com/project/davidski/PSRedSeal)
 
 # Introduction
 A PowerShell integration library for working with [RedSeal](https://www.redseal.net).

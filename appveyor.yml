@@ -54,7 +54,7 @@ test_script:
       if ($res.Count -gt 0) { throw "$($res.Count) tests failed."}
       # If on a GH tag, push to PS Gallery
       if ($env:APPVEYOR_REPO_TAG -eq "true") {
-          Publish-Module $ENV:APPVEYOR_BUILD_FOLDER\PSRedSeal -NuGetApiKey $Env:NUGET_API_KEY
+          Publish-Module -Path $ENV:APPVEYOR_BUILD_FOLDER\PSRedSeal -NuGetApiKey $Env:NUGET_API_KEY
       }
 
 deploy:

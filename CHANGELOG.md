@@ -1,5 +1,8 @@
 # Changelog
 
+## 05/02/2017
+- Correct missing Send-RSRequest (h/t Anthony Lehmiller)
+
 ## 12/17/2016
 - Major refactor from monolithic to individual functions
 
